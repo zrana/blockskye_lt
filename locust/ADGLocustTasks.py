@@ -27,14 +27,15 @@ class RegistrationTasks(TaskSet):
         self.user_credentials = random.choice(self.credentials)
         self.credentials.remove(self.user_credentials)
         self.login_page.login(self.user_credentials)
+        self.register_task()
 
-    @task(1)
+    #@task(1)
     def register_task(self):
         a = randint(20, 25)
         time.sleep(a)
-        account = 'kashif.chaudhry'
+        account = 'a.khan'
         user_email = '{}+{}@arbisoft.com'.format(account, str(uuid.uuid4().node))
-        username = 'kashifch{}'.format(str(uuid.uuid4().node))
+        username = 'akhan{}'.format(str(uuid.uuid4().node))
         self.register_page.register(user_email, username)
         self.application_page.visit_application_page()
         self.application_page.visit_contact_page()
