@@ -29,10 +29,14 @@ class RegistrationTasks(TaskSet):
         self.login_page.login(self.user_credentials)
         self.register_task()
 
-    #@task(1)
+    @task(4)
+    def dashboard_task(self):
+        print("dummy task")
+        #self.login_page.visit_dashboard_page()
+    # @task(15)
     def register_task(self):
-        a = randint(20, 25)
-        time.sleep(a)
+        # a = randint(20, 25)
+        # time.sleep(a)
         account = 'a.khan'
         user_email = '{}+{}@arbisoft.com'.format(account, str(uuid.uuid4().node))
         username = 'akhan{}'.format(str(uuid.uuid4().node))
@@ -45,6 +49,14 @@ class RegistrationTasks(TaskSet):
         self.application_page.fill_cover_form()
         self.application_page.enroll()
 
-    @task(15)
-    def dummy_task(self):
-        print("dummy")
+    # @task(4)
+    # def dashboard_task(self):
+    #     self.login_page.visit_dashboard_page()
+    #
+    # @task(3)
+    # def application_task(self):
+    #     self.login_page.visit_application_page()
+    #
+    # @task(2)
+    # def account_task(self):
+    #     self.login_page.visit_account_page()
