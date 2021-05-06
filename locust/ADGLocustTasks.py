@@ -37,9 +37,9 @@ class RegistrationTasks(TaskSet):
     def register_task(self):
         # a = randint(20, 25)
         # time.sleep(a)
-        account = 'a.khan'
+        account = 'kashif.chaudhry'
         user_email = '{}+{}@arbisoft.com'.format(account, str(uuid.uuid4().node))
-        username = 'akhan{}'.format(str(uuid.uuid4().node))
+        username = 'kashifch{}'.format(str(uuid.uuid4().node))
         self.register_page.register(user_email, username)
         self.application_page.visit_application_page()
         self.application_page.visit_contact_page()
