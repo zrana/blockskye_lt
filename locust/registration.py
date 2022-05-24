@@ -64,9 +64,9 @@ class Registration(ADGBase):
         self._check_response(response)
         return response
 
-    def expense_approval(self):
+    def create_expense(self):
         url = self.hostname + '/api/v1/expense_approval/create'
-        registration_params = {
+        bodyParams = {
             "employee_id": "00300232877",
             "employer_id": "1",
             "total_amount": 2000,
@@ -95,19 +95,15 @@ class Registration(ADGBase):
             'Content-Type': 'application/json',
             'Connection': 'keep-alive'
         }
-        response = self.client.post(url, json=registration_params, headers=headers, name="Expense Approval")
-        print('*** response *** 33333 ***')
-        print(response.text)
-        self._check_response(response)
+        response = self.client.post(url, json=bodyParams, headers=headers, name="Create Expense")
+
+        #self._check_response(response)
 
         return response
 
-    def add_ticket_data(self, response):
-        url2 = self.hostname + 'api/v1/test/expense_approval/' + response.data.expense_approval_id
-
-        print(url2)
-
-        registration_params2 = {
+    def add_ticket_data(self, expense_approval_id, account_number):
+        url = self.hostname + '/api/v1/test/expense_approval/' + expense_approval_id
+        bodyParams = {
             "airSegments": [
                 {
                     "aircraftTypeCode": "37C",
@@ -166,14 +162,14 @@ class Registration(ADGBase):
             },
             "ticket":{
                 "Sale":[{
-                        "expenseID": response.data.expense_approval_id,
+                        "expenseID": expense_approval_id,
                         "dateOfIssue": "2022-04-28",
                         "documentNumber": "123456123456",
                         "agencyCode": "10779613",
                         "airlineCarrierCode": "016",
                         "pnrReference":"TEST45",
                         "payments": [{
-                            "accountNumber": response.data.suvtpNumber.accountNumber,
+                            "accountNumber": account_number,
                             "formOfPaymentAmount": {
                                 "amount": 100000,
                                 "currency": "USD",
@@ -222,9 +218,7 @@ class Registration(ADGBase):
             'Connection': 'keep-alive'
         }
 
-
-        response2 = self.client.put(url2, json=registration_params2, headers=headers, name="Adding Ticket data")
-        print('*** response *** 4444444 ***')
-        print(response2.text)
-        self._check_response(response2)
+        response = self.client.put(url, json=bodyParams, headers=headers, name="Adding Ticket data")
+        
+        self._check_response(response)
 

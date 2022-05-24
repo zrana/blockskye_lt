@@ -7,6 +7,7 @@ from config import USER_CREDENTAILS
 import uuid
 import time
 import random
+import json
 
 
 class RegistrationTasks(TaskSet):
@@ -42,8 +43,9 @@ class RegistrationTasks(TaskSet):
         user_email = '{}+{}@arbisoft.com'.format(account, str(uuid.uuid4().node))
         username = 'zrana{}'.format(str(uuid.uuid4().node))
         #self.register_page.register(user_email, username)
-        response = self.register_page.expense_approval()
-        self.register_page.add_ticket_data(response)
+        response = self.register_page.create_expense()
+        responseBody = json.loads(response.text)
+        self.register_page.add_ticket_data(responseBody['expense_approval_id'], responseBody['suvtpNumber']['accountNumber'])
         # self.application_page.visit_application_page()
         # self.applicaxtion_page.visit_contact_page()
         # self.application_page.fill_contact_form(user_email, username)
