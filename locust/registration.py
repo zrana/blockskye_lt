@@ -9,10 +9,15 @@ class Registration(ADGBase):
         """
         super(Registration, self).__init__(*args, **kwargs)
 
-    def _check_response(self, response):
+        self.headers = {
+            "Authorization": "Bearer 1|JwjHRaWmNLKo6G8PVWo63JaiDasTo4tuYjn70U20",
+            'Accept': '*/*',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Content-Type': 'application/json',
+            'Connection': 'keep-alive'
+        }
 
-        print('*** response ***')
-        print(response)
+    def _check_response(self, response):
         """
         Check whether a response was successful.
         """
@@ -44,24 +49,15 @@ class Registration(ADGBase):
 
     def register(self, email, username):
         url = self.hostname + '/api/v1/profile/create?employee_id=' + username + '&employer_id=1'
-        print(url)
         #response = self.client.post(url)
         #token = response.cookies['csrftoken']
         registration_params = {
             "email": email,
             "name": username
         }
-        headers = {
-            "Authorization": "Bearer 1|JwjHRaWmNLKo6G8PVWo63JaiDasTo4tuYjn70U20",
-            'Accept': '*/*',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Content-Type': 'application/json',
-            'Connection': 'keep-alive'
-        }
-        print(registration_params)
-        print(headers)
-        response = self.client.post(url, json=registration_params, headers=headers, name="Create User Profile")
-        self._check_response(response)
+
+        response = self.client.post(url, json=registration_params, headers=self.headers, name="Create User Profile")
+        #self._check_response(response)
         return response
 
     def create_expense(self):
@@ -88,14 +84,8 @@ class Registration(ADGBase):
                 }
             ]
         }
-        headers = {
-            "Authorization": "Bearer 1|JwjHRaWmNLKo6G8PVWo63JaiDasTo4tuYjn70U20",
-            'Accept': '*/*',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Content-Type': 'application/json',
-            'Connection': 'keep-alive'
-        }
-        response = self.client.post(url, json=bodyParams, headers=headers, name="Create Expense")
+        
+        response = self.client.post(url, json=bodyParams, headers=self.headers, name="Create Expense")
 
         #self._check_response(response)
 
@@ -210,15 +200,56 @@ class Registration(ADGBase):
             }
         }
 
-        headers = {
-            "Authorization": "Bearer 1|JwjHRaWmNLKo6G8PVWo63JaiDasTo4tuYjn70U20",
-            'Accept': '*/*',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Content-Type': 'application/json',
-            'Connection': 'keep-alive'
-        }
+        response = self.client.put(url, json=bodyParams, headers=self.headers, name="Adding Ticket data")
+        
+        #self._check_response(response)
 
-        response = self.client.put(url, json=bodyParams, headers=headers, name="Adding Ticket data")
+    def update_profile(self, employee_id, new_user_email, new_username):
+        url = self.hostname + '/api/v1/profile/update?employee_id=' + employee_id + '&employer_id=1'
+        
+        bodyParams = {
+            "name": new_username,
+            "email": new_user_email,
+            "calendar_integrated": 1,
+            "do_not_remind": 0,
+            "google_token": "test_token",
+            "recent_job_codes": "test_code"
+        }
+        
+        response = self.client.put(url, json=bodyParams, headers=self.headers, name="Update User Profile")
+        
+        #self._check_response(response)
+        #return response
+
+    def get_profile(self, employee_id):
+        url = self.hostname + '/api/v1/profile/get?employee_id=' + employee_id + '&employer_id=1'
+        
+        response = self.client.get(url, headers=self.headers, name="Get User Profile")
+        
+        #self._check_response(response)
+        #return response
+
+    def get_expense(self, expense_approval_id):
+        url = self.hostname + '/api/v1/expense/get_expense/' + expense_approval_id
+        
+        response = self.client.get(url, headers=self.headers, name="Get Expense")
+        
+        #self._check_response(response)
+        #return response
+
+    def get_calendar(self, employee_id):
+        url = self.hostname + '/api/v1/calendar-integration/status?employee_id=' + employee_id + '&employer_id=1'
+        
+        response = self.client.get(url, headers=self.headers, name="Get Calendar Status")
+        
+        #self._check_response(response)
+        #return response
+
+    def delete_profile(self, employee_id):
+        url = self.hostname + '/api/v1/profile/delete?employee_id=' + employee_id + '&employer_id=1'
+        
+        response = self.client.delete(url, headers=self.headers, name="Delete profile")
         
         self._check_response(response)
+        #return response
 
