@@ -1,5 +1,5 @@
 
-class ADGBase(object):
+class BlockSkyeBase(object):
     """
     Base class for page objects.
     """

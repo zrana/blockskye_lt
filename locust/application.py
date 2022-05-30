@@ -1,8 +1,8 @@
-from ADGBase import ADGBase
+from BlockSkyeBase import BlockSkyeBase
 from bs4 import BeautifulSoup
 
 
-class ApplicationFlow(ADGBase):
+class ApplicationFlow(BlockSkyeBase):
 
     def __init__(self, *args, **kwargs):
         """

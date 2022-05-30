@@ -1,12 +1,6 @@
 from locust import task, TaskSet
-from registration import Registration
-from application import ApplicationFlow
-from random import randint
-from login import Login
-from config import USER_CREDENTAILS
+from application_flow import ApplicationFlow
 import uuid
-import time
-import random
 import json
 
 
@@ -17,76 +11,49 @@ class RegistrationTasks(TaskSet):
         Initialize the Task set.
         """
         super(RegistrationTasks, self).__init__(*args, **kwargs)
-        self.lt_blockskye = Registration(self.user.host, self.client)
-        #self.application_page = ApplicationFlow(self.user.host, self.client)
-        #self.login_page = Login(self.user.host, self.client)
-        # self.token = ''
-        # self.cookie = ''
-        self.credentials = USER_CREDENTAILS
+        self.lt_blockskye = ApplicationFlow(self.user.host, self.client)
+        self.account = 'zeeshan.rana'
+        self.username = ''
 
     def on_start(self):
-        # self.user_credentials = random.choice(self.credentials)
-        # self.credentials.remove(self.user_credentials)
-        #self.login_page.login(self.user_credentials)
-        self.register_task()
-
-    # @task(4)
-    # def dashboard_task(self):
-    #     print("dummy task")
-        #self.login_page.visit_dashboard_page()
-
-    @task
-    def register_task(self):
-        # a = randint(20, 25)
-        # time.sleep(a)
-
         # create profile
-        account = 'zeeshan.rana'
-        user_email = '{}+{}@arbisoft.com'.format(account, str(uuid.uuid4().node))
-        username = 'zrana{}'.format(str(uuid.uuid4().node))
-        self.lt_blockskye.register(user_email, username)
+        user_email = '{}+{}@arbisoft.com'.format(self.account, str(uuid.uuid4().node))
+        self.username = 'zrana{}'.format(str(uuid.uuid4().node))
+        self.lt_blockskye.create_profile(user_email, self.username)
 
+    @task(4)
+    def update_profile(self):
         # update profile
-        new_user_email = '{}+{}@arbisoft.com'.format(account, str(uuid.uuid4().node))
+        new_user_email = '{}+{}@arbisoft.com'.format(self.account, str(uuid.uuid4().node))
         new_username = 'zrana{}'.format(str(uuid.uuid4().node))
-        self.lt_blockskye.update_profile(username, new_user_email, new_username)
 
+        self.lt_blockskye.update_profile(self.username, new_user_email, new_username)
+
+    @task(3)
+    def get_profile(self):
         # get profile
-        self.lt_blockskye.get_profile(username)
-
+        self.lt_blockskye.get_profile(self.username)
         # get calendar
-        self.lt_blockskye.get_calendar(username)
+        self.lt_blockskye.get_calendar(self.username)
 
+    # @task(2)
+    # def delete_profile(self):
+    #     # delete profile
+    #     self.lt_blockskye.delete_profile(self.username)
+
+    @task(10)
+    def create_expense_and_booking(self):
         # create expense
         response = self.lt_blockskye.create_expense()
-
         # add ticket data
-        responseBody = json.loads(response.text)
-        self.lt_blockskye.add_ticket_data(responseBody['expense_approval_id'], responseBody['suvtpNumber']['accountNumber'])
-        
+        response_body = json.loads(response.text)
+        import time
+        time.sleep(6)
+        self.lt_blockskye.add_ticket_data(response_body['expense_approval_id'], response_body['suvtpNumber']['accountNumber'])
         # get expense
-        self.lt_blockskye.get_expense(responseBody['expense_approval_id'])
+        #time.sleep(30)
+        #self.lt_blockskye.get_expense(response_body['expense_approval_id'])
 
-        # delete profile
-        self.lt_blockskye.delete_profile(username)
-
-        
-        # self.application_page.visit_application_page()
-        # self.applicaxtion_page.visit_contact_page()
-        # self.application_page.fill_contact_form(user_email, username)
-        # self.application_page.fill_education_form()
-        # self.application_page.fill_experience_form()
-        # self.application_page.fill_cover_form()
-        # self.application_page.enroll()
-
-    # @task(4)
-    # def dashboard_task(self):
-    #     self.login_page.visit_dashboard_page()
-    #
-    # @task(3)
-    # def application_task(self):
-    #     self.login_page.visit_application_page()
-    #
-    # @task(2)
-    # def account_task(self):
-    #     self.login_page.visit_account_page()
+    # def on_stop(self):
+    #     # delete profile
+    #     self.lt_blockskye.delete_profile(self.username)
