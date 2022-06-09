@@ -1,4 +1,5 @@
 from BlockSkyeBase import BlockSkyeBase
+import json
 
 
 class ApplicationFlow(BlockSkyeBase):
@@ -54,6 +55,20 @@ class ApplicationFlow(BlockSkyeBase):
     def get_profile(self, employee_id):
         url = self.hostname + '/api/v1/profile/get?employee_id=' + employee_id + '&employer_id=1'
         response = self.client.get(url, headers=self.headers, name="Get User Profile")
+        self._check_response(response)
+
+        return response
+
+    def initial_form_request(self, employee_id):
+        url = self.hostname + '/api/v1/expense_approval/checkout_form?employee_id=' + employee_id + '&employer_id=1'
+        response = self.client.get(url, headers=self.headers, name="Initial form request")
+        self._check_response(response)
+
+        return response
+
+    def wbs_code_lookup(self, employee_id):
+        url = self.hostname + '/api/v1/expense_approval/job_codes?employee_id=' + employee_id + '&employer_id=1&search_query=Google'
+        response = self.client.get(url, headers=self.headers, name="WBS code lookup")
         self._check_response(response)
 
         return response
@@ -201,17 +216,25 @@ class ApplicationFlow(BlockSkyeBase):
                 }]
             }
         }
-        response = self.client.put(url, json=bodyParams, headers=self.headers, name="Adding Ticket data")
+
+        with self.client.put(url, json=bodyParams, headers=self.headers, name="Adding Ticket data", catch_response=True) as response:
+            if response.status_code == 404:
+                response.success()
+    
         self._check_response(response)
-        # import pdb
-        # pdb.set_trace()
         return response
-
-
 
     def get_expense(self, expense_approval_id):
         url = self.hostname + '/api/v1/expense/get_expense/' + expense_approval_id
-        response = self.client.get(url, headers=self.headers, name="Get Expense")
+
+        with self.client.get(url, headers=self.headers, name="Get Expense", catch_response=True) as response:
+            if response.status_code == 503:
+                response.success()
+            while response.status_code == 503:
+                with self.client.get(url, headers=self.headers, name="Get Expense", catch_response=True) as response:
+                    if response.status_code == 503:
+                        response.success()
+        
         self._check_response(response)
         return response
 

@@ -33,6 +33,10 @@ class RegistrationTasks(TaskSet):
     def get_profile(self):
         # get profile
         self.lt_blockskye.get_profile(self.username)
+        # initial form request
+        self.lt_blockskye.initial_form_request(self.username)
+        # wbs code lookup
+        self.lt_blockskye.wbs_code_lookup(self.username)
         # get calendar
         self.lt_blockskye.get_calendar(self.username)
 
@@ -47,13 +51,14 @@ class RegistrationTasks(TaskSet):
         response = self.lt_blockskye.create_expense()
         # add ticket data
         response_body = json.loads(response.text)
-        import time
-        time.sleep(6)
+        # import time
+        # time.sleep(12)
         self.lt_blockskye.add_ticket_data(response_body['expense_approval_id'], response_body['suvtpNumber']['accountNumber'])
         # get expense
         #time.sleep(30)
         #self.lt_blockskye.get_expense(response_body['expense_approval_id'])
 
-    # def on_stop(self):
-    #     # delete profile
-    #     self.lt_blockskye.delete_profile(self.username)
+    def on_stop(self):
+        # delete profile
+        self.lt_blockskye.delete_profile(self.username)
+        self.user.environment.runner.quit()
